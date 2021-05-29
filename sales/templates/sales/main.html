@@ -5,5 +5,10 @@ sales list
 {% endblock title %}
 
 {% block content %}
-Sale List
+
+Sales List
+<br>
+{% for sales in SalesList %}
+    <a href="{{sales.get_absolute_url}}">{{sales.transaction_id}}</a>
+{% endfor %}
 {% endblock content %}
