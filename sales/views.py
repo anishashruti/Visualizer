@@ -3,11 +3,15 @@ from django.views.generic import ListView,DetailView
 from .models import Sale
 from .forms import SalesSearchForm
 import pandas as pd
+from .utils import get_salesman_id,get_customer_id,get_chart
 # Create your views here.
 #function view are readable than class based views
 def home_view(request):
     sale_df=None
     postitions_df = None
+    mergedf=None
+    df=None
+    postition_data=[]
     form=SalesSearchForm(request.POST or None)
     if request.method == 'POST':
         date_from = request.POST.get('date_from')
@@ -17,7 +21,11 @@ def home_view(request):
         sale_querySet=Sale.objects.filter(created__date__lte=date_to, created__date__gte=date_from)
         if len(sale_querySet) > 0:        
             sale_df=pd.DataFrame(sale_querySet.values())
-            postition_data=[]
+            sale_df['customer_id']=sale_df['customer_id'].apply(get_customer_id)
+            sale_df['salesman_id']=sale_df['salesman_id'].apply(get_salesman_id)
+            sale_df['created']=sale_df['created'].apply(lambda x:x.strftime('%d-%m-%Y'))
+            sale_df['updated']=sale_df['updated'].apply(lambda x:x.strftime('%d-%m-%Y'))
+            sale_df.rename({'salesman_id':'Salesman','customer_id':'Customer','id':'sales_id'},axis=1,inplace=True)
             for sale in sale_querySet:
                 for pos in sale.get_postions():
                     obj={
@@ -25,18 +33,27 @@ def home_view(request):
                         'product':pos.product.name,
                         'quantity':pos.quantity,
                         'price':pos.price,
+                        'sales_id':pos.get_sales_id(),
                     }
                     postition_data.append(obj)
             postition_data =pd.DataFrame(postition_data)
+            mergedf=pd.merge(postition_data,sale_df,on='sales_id')
+            df=mergedf.groupby('transaction_id',as_index=False)['price'].agg('sum')
+            chart=get_chart(chart_type,df)
+            
             sale_df=sale_df.to_html()
             postition_data=postition_data.to_html()
+            mergedf=mergedf.to_html()           
+            df=df.to_html()
             # print(postition_data)
         else:
             print('no data')
     context={
         'form':form,
         'sale_df':sale_df,
-        'postition_data':postition_data
+        'postition_data':postition_data,
+        'mergedf':mergedf,
+        'df':df
     }
     return render(request,'sales/home.html',context)
 
