@@ -1,9 +1,9 @@
 from django import forms
 
 CHOICES=(
-    ('#1','BAR'),
-    ('#2','PIE'),
-    ('#1','LINE'),
+    ('#1','BAR CHART'),
+    ('#2','PIE CHART'),
+    ('#1','LINE CHART'),
 )
 
 class SalesSearchForm(forms.Form):

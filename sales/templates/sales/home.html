@@ -5,7 +5,7 @@ home
 {% endblock title %}
 
 {% block content %}
-{{st}}
+
 <hr>
 <form action="" method="post">
     {% csrf_token %}
@@ -13,4 +13,12 @@ home
     <br>
     <button type="submit" class="btn btn-primary">Search!</button>
 </form>
+<br>
+{% if sale_df %}
+    {{sale_df|safe}}
+    <br>
+    {{postition_data|safe}}
+{% else %}
+    <h3>No Data</h3>
+{% endif%}
 {% endblock content %}
