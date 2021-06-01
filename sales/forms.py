@@ -3,7 +3,7 @@ from django import forms
 CHOICES=(
     ('#1','BAR CHART'),
     ('#2','PIE CHART'),
-    ('#1','LINE CHART'),
+    ('#3','LINE CHART'),
 )
 
 class SalesSearchForm(forms.Form):

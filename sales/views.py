@@ -11,6 +11,7 @@ def home_view(request):
     postitions_df = None
     mergedf=None
     df=None
+    chart=None
     postition_data=[]
     form=SalesSearchForm(request.POST or None)
     if request.method == 'POST':
@@ -39,7 +40,7 @@ def home_view(request):
             postition_data =pd.DataFrame(postition_data)
             mergedf=pd.merge(postition_data,sale_df,on='sales_id')
             df=mergedf.groupby('transaction_id',as_index=False)['price'].agg('sum')
-            chart=get_chart(chart_type,df)
+            chart=get_chart(chart_type,df,labels=df['transaction_id'].values)
             
             sale_df=sale_df.to_html()
             postition_data=postition_data.to_html()
@@ -53,7 +54,8 @@ def home_view(request):
         'sale_df':sale_df,
         'postition_data':postition_data,
         'mergedf':mergedf,
-        'df':df
+        'df':df,
+        'chart':chart
     }
     return render(request,'sales/home.html',context)
 
