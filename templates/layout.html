@@ -20,13 +20,14 @@
     <script src="{% static 'dropzone.js' %}" defer></script> -->
 
     <!-- Custom js & css -->
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block scripts %}
     {% endblock scripts %}
 
     <title>Visualizer | {% block title %}{% endblock title %}</title>
   </head>
   <body>
+
     {% include 'navbar.html' %}
     <div class="container mt-3 mb-3">
         {% block content %}
