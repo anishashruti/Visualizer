@@ -34,7 +34,11 @@ home
       </div>
     </div>
   </div>
-<hr>
+{% if no_data %}
+<div class="alert alert-danger" role="alert">
+    {{no_data}}
+</div>
+{% endif %}
 <form action="" method="post">
     {% csrf_token %}
     {{search_form|crispy}}
@@ -51,10 +55,7 @@ home
     <br>
     {{df|safe}}
     <br>
-    Chart
     <img src="data:image/png;base64, {{chart| safe}}" id='img'/>
-{% else %}
-    <h3>No Data</h3>
 {% endif%}
 <br>
 <!-- Button trigger modal -->

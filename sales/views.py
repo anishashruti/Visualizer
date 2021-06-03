@@ -14,12 +14,14 @@ def home_view(request):
     df=None
     chart=None
     postition_data=[]
+    no_data=None
     search_form=SalesSearchForm(request.POST or None)
     report_form=ReportForms()
     if request.method == 'POST':
         date_from = request.POST.get('date_from')
         date_to = request.POST.get('date_to')
         chart_type = request.POST['chart_type']
+        results_by = request.POST['results_by']
         # print(date_from,chart_type,date_to)
         sale_querySet=Sale.objects.filter(created__date__lte=date_to, created__date__gte=date_from)
         if len(sale_querySet) > 0:        
@@ -42,7 +44,7 @@ def home_view(request):
             postition_data =pd.DataFrame(postition_data)
             mergedf=pd.merge(postition_data,sale_df,on='sales_id')
             df=mergedf.groupby('transaction_id',as_index=False)['price'].agg('sum')
-            chart=get_chart(chart_type,df,labels=df['transaction_id'].values)
+            chart=get_chart(chart_type,sale_df,results_by)
             
             sale_df=sale_df.to_html()
             postition_data=postition_data.to_html()
@@ -50,7 +52,8 @@ def home_view(request):
             df=df.to_html()
             # print(postition_data)
         else:
-            print('no data')
+            no_data='No data is available in this Date range'
+            # print('no data')
     context={
         'search_form':search_form,
         'report_form':report_form,
@@ -58,7 +61,8 @@ def home_view(request):
         'postition_data':postition_data,
         'mergedf':mergedf,
         'df':df,
-        'chart':chart
+        'chart':chart,
+        'no_data':no_data
     }
     return render(request,'sales/home.html',context)
 
